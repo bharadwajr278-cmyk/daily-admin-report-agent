@@ -5,6 +5,16 @@ on:
     # Start at 6:30 PM IST so the program can verify fresh data and send at 7:00 PM IST.
     - cron: "0 13 * * *"
   workflow_dispatch:
+    inputs:
+      report_date:
+        description: "Report date (YYYY-MM-DD)"
+        required: true
+        type: string
+      send_email:
+        description: "Send the report email now"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -27,6 +37,8 @@ jobs:
       GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
       GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
       REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
+      REPORT_RUN_MODE: ${{ github.event_name }}
+      REPORT_DATE: ${{ inputs.report_date }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -43,6 +55,6 @@ jobs:
       - name: Run unit tests
         run: python -m unittest -v test_main.py
 
-      - name: Generate and email report at 7:00 PM IST
-        if: github.event_name == 'schedule'
+      - name: Generate and email report
+        if: github.event_name == 'schedule' || inputs.send_email == true
         run: python main.py

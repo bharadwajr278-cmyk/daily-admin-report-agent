@@ -374,15 +374,24 @@ def send_email(report: Report) -> None:
 
 def main() -> int:
     today = datetime.now(IST).date().isoformat()
-    subject = f"Brokket Daily Admin Report | {today}"
+    manual_run = os.getenv("REPORT_RUN_MODE") == "workflow_dispatch"
+    report_date = os.getenv("REPORT_DATE", "").strip() if manual_run else today
+    if manual_run:
+        try:
+            datetime.strptime(report_date, "%Y-%m-%d")
+        except ValueError as error:
+            raise RuntimeError("REPORT_DATE must use YYYY-MM-DD format") from error
+    subject = f"Brokket Daily Admin Report | {report_date}"
     if email_already_sent(subject):
-        print(f"Report for {today} already exists in Sent Mail; skipping duplicate.")
+        print(f"Report for {report_date} already exists in Sent Mail; skipping duplicate.")
         return 0
-    wait_for_collection_window()
-    report = collect_verified(today)
-    wait_until_send_time()
+    if not manual_run:
+        wait_for_collection_window()
+    report = collect_verified(report_date)
+    if not manual_run:
+        wait_until_send_time()
     send_email(report)
-    print(json.dumps({"sent": True, "date": today, "status": report.data_status}))
+    print(json.dumps({"sent": True, "date": report_date, "status": report.data_status}))
     return 0
 
 
