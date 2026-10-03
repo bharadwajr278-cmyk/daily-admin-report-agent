@@ -20,6 +20,11 @@ on:
         required: false
         default: ""
         type: string
+      send_additional_only:
+        description: "Send only to the additional recipient"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -42,9 +47,11 @@ jobs:
       GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
       GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
       REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
+      REPORT_CC: ${{ secrets.REPORT_CC }}
       REPORT_RUN_MODE: ${{ github.event_name }}
       REPORT_DATE: ${{ inputs.report_date }}
       REPORT_SUBJECT_SUFFIX: ${{ inputs.subject_suffix }}
+      SEND_ADDITIONAL_ONLY: ${{ inputs.send_additional_only }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

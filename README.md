@@ -23,6 +23,7 @@ Add these under **Settings → Secrets and variables → Actions**:
 - `GMAIL_ADDRESS`
 - `GMAIL_APP_PASSWORD`
 - `REPORT_RECIPIENT`
+- `REPORT_CC`
 
 Never add secret values to source files, workflow YAML, commits, issues, pull requests, or workflow logs.
 

@@ -299,7 +299,12 @@ def report_subject(date_iso: str) -> str:
 
 
 def build_email(report: Report) -> EmailMessage:
-    recipient = required_env("REPORT_RECIPIENT")
+    primary_recipient = required_env("REPORT_RECIPIENT")
+    additional_recipient = os.getenv("REPORT_CC", "").strip()
+    additional_only = os.getenv("SEND_ADDITIONAL_ONLY", "").lower() == "true"
+    if additional_only and not additional_recipient:
+        raise RuntimeError("REPORT_CC is required for an additional-recipient-only send")
+    recipient = additional_recipient if additional_only else primary_recipient
     sender = required_env("GMAIL_ADDRESS")
     subject = report_subject(report.report_date)
     rows = [
@@ -362,6 +367,8 @@ def build_email(report: Report) -> EmailMessage:
     message = EmailMessage()
     message["From"] = sender
     message["To"] = recipient
+    if additional_recipient and not additional_only:
+        message["Cc"] = additional_recipient
     message["Subject"] = subject
     message.set_content(text_body)
     message.add_alternative(html_body, subtype="html")
