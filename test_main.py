@@ -7,6 +7,7 @@ from main import (
     duration_minutes,
     format_query_cost,
     normalise_duration,
+    report_subject,
     report_signature,
 )
 
@@ -22,6 +23,13 @@ class ReportTests(unittest.TestCase):
     def test_query_cost(self):
         self.assertEqual(format_query_cost(46_765_000_000), "₹4676.50 Cr")
         self.assertEqual(format_query_cost(5_445_700_000), "₹544.57 Cr")
+
+    @patch.dict("os.environ", {"REPORT_SUBJECT_SUFFIX": "Corrected"})
+    def test_corrected_subject_suffix(self):
+        self.assertEqual(
+            report_subject("2026-10-02"),
+            "Brokket Daily Admin Report | 2026-10-02 | Corrected",
+        )
 
     @patch("main.query_summary")
     @patch("main.member_summary")

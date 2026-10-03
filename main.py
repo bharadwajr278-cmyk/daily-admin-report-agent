@@ -292,10 +292,16 @@ def display_date(date_iso: str) -> str:
     return parsed.strftime("%d %B %Y")
 
 
+def report_subject(date_iso: str) -> str:
+    base = f"Brokket Daily Admin Report | {date_iso}"
+    suffix = os.getenv("REPORT_SUBJECT_SUFFIX", "").strip()
+    return f"{base} | {suffix}" if suffix else base
+
+
 def build_email(report: Report) -> EmailMessage:
     recipient = required_env("REPORT_RECIPIENT")
     sender = required_env("GMAIL_ADDRESS")
-    subject = f"Brokket Daily Admin Report | {report.report_date}"
+    subject = report_subject(report.report_date)
     rows = [
         ("Download App", report.downloads),
         ("Filtered Members", report.filtered_members),
@@ -380,7 +386,7 @@ def main() -> int:
             datetime.strptime(report_date, "%Y-%m-%d")
         except ValueError as error:
             raise RuntimeError("REPORT_DATE must use YYYY-MM-DD format") from error
-    subject = f"Brokket Daily Admin Report | {report_date}"
+    subject = report_subject(report_date)
     if email_already_sent(subject):
         print(f"Report for {report_date} already exists in Sent Mail; skipping duplicate.")
         return 0
