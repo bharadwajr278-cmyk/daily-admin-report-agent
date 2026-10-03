@@ -266,6 +266,12 @@ def wait_until_send_time() -> None:
     target = now.replace(hour=19, minute=0, second=0, microsecond=0)
     if now < target:
         time.sleep((target - now).total_seconds())
+    now = datetime.now(IST)
+    window_end = now.replace(hour=19, minute=5, second=0, microsecond=0)
+    if now >= window_end:
+        raise RuntimeError(
+            "7:00 PM IST delivery window was missed; email was not sent at another time"
+        )
 
 
 def email_already_sent(subject: str) -> bool:

@@ -28,7 +28,7 @@ Never add secret values to source files, workflow YAML, commits, issues, pull re
 
 ## Schedule
 
-The workflow is requested at 6:55 PM IST. The program waits for the final collection window, verifies two complete current-day readings, recalculates usage minutes independently, and targets email delivery at 7:00 PM IST. GitHub-hosted scheduled jobs can occasionally start late, so exact-to-the-second delivery cannot be guaranteed by GitHub Actions.
+The report is scheduled **daily for 7:00 PM IST only**. GitHub starts the workflow at 6:55 PM IST so the program can wait for the final collection window, verify two complete current-day readings, recalculate usage minutes independently, and send at 7:00 PM IST. Manual workflow runs execute the unit tests but never send an email. If GitHub starts too late and the 7:00–7:05 PM IST delivery window is missed, the job fails without sending at another time.
 
 ## Local tests
 

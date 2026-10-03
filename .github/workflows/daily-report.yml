@@ -1,7 +1,8 @@
-name: Daily admin report
+name: Daily admin report — 7:00 PM IST
 
 on:
   schedule:
+    # Start at 6:55 PM IST so the program can verify fresh data and send at 7:00 PM IST.
     - cron: "25 13 * * *"
   workflow_dispatch:
 
@@ -42,5 +43,6 @@ jobs:
       - name: Run unit tests
         run: python -m unittest -v test_main.py
 
-      - name: Generate and email report
+      - name: Generate and email report at 7:00 PM IST
+        if: github.event_name == 'schedule'
         run: python main.py
