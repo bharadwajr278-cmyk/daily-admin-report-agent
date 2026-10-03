@@ -1,6 +1,14 @@
 import unittest
+from unittest.mock import patch
 
-from main import Report, duration_minutes, format_query_cost, normalise_duration, report_signature
+from main import (
+    Report,
+    collect_once,
+    duration_minutes,
+    format_query_cost,
+    normalise_duration,
+    report_signature,
+)
 
 
 class ReportTests(unittest.TestCase):
@@ -14,6 +22,29 @@ class ReportTests(unittest.TestCase):
     def test_query_cost(self):
         self.assertEqual(format_query_cost(46_765_000_000), "₹4676.50 Cr")
         self.assertEqual(format_query_cost(5_445_700_000), "₹544.57 Cr")
+
+    @patch("main.query_summary")
+    @patch("main.member_summary")
+    @patch("main.login")
+    def test_joined_and_usage_member_mapping(self, mock_login, mock_member_summary, mock_query_summary):
+        mock_login.return_value = object()
+
+        def summary(_session, _date, filter_type, _member_type):
+            if filter_type == "JOINED":
+                return {"activeMembers": 73}
+            return {"activeMembers": 213, "filteredAppUsage": "1D 12H 32M 57S"}
+
+        mock_member_summary.side_effect = summary
+        mock_query_summary.return_value = {
+            "countByActionType": {"WHATSAPPED": 4, "CALLED": 28, "SHARED": 1},
+            "totalQueryCost": 46_765_000_000,
+        }
+
+        report = collect_once("2026-10-02")
+        self.assertEqual(report.downloads, 73)
+        self.assertEqual(report.filtered_members, 213)
+        self.assertEqual(report.usage_day_wise, "1D 12H 32M 57S")
+        self.assertEqual(report.usage_minutes, "2192.95")
 
     def test_signature_ignores_notes(self):
         base = dict(

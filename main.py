@@ -190,15 +190,14 @@ def collect_once(date_iso: str) -> Report:
         )
 
     try:
-        joined_all = member_summary(session, date_iso, "JOINED", "ALL")
-        joined_registered = member_summary(session, date_iso, "JOINED", "REGISTERED")
-        values["filtered_members"] = joined_all.get("activeMembers", "Unavailable")
-        values["downloads"] = joined_registered.get("activeMembers", "Unavailable")
+        joined = member_summary(session, date_iso, "JOINED", "ALL")
+        values["downloads"] = joined.get("activeMembers", "Unavailable")
     except Exception as exc:
-        notes.append(f"Mini CRM member data unavailable: {exc}")
+        notes.append(f"Mini CRM joined-member data unavailable: {exc}")
 
     try:
         usage = member_summary(session, date_iso, "USAGE", "ALL")
+        values["filtered_members"] = usage.get("activeMembers", "Unavailable")
         raw_usage = usage.get("filteredAppUsage")
         if raw_usage is None:
             raise RuntimeError("filteredAppUsage is absent")
