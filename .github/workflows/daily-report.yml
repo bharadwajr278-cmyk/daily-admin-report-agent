@@ -1,0 +1,46 @@
+name: Daily admin report
+
+on:
+  schedule:
+    - cron: "25 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-admin-report
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BROKKET_BASE_URL: ${{ secrets.BROKKET_BASE_URL }}
+      BROKKET_LOGIN_PATH: ${{ secrets.BROKKET_LOGIN_PATH }}
+      BROKKET_MEMBERS_PATH: ${{ secrets.BROKKET_MEMBERS_PATH }}
+      BROKKET_QUERIES_PATH: ${{ secrets.BROKKET_QUERIES_PATH }}
+      BROKKET_PHONE: ${{ secrets.BROKKET_PHONE }}
+      BROKKET_PASSWORD: ${{ secrets.BROKKET_PASSWORD }}
+      GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+      GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+      REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install --requirement requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest -v test_main.py
+
+      - name: Generate and email report
+        run: python main.py
