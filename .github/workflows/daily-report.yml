@@ -2,8 +2,8 @@ name: Daily admin report — 7:00 PM IST
 
 on:
   schedule:
-    # Start at 6:55 PM IST so the program can verify fresh data and send at 7:00 PM IST.
-    - cron: "25 13 * * *"
+    # Start at 6:30 PM IST so the program can verify fresh data and send at 7:00 PM IST.
+    - cron: "0 13 * * *"
   workflow_dispatch:
 
 permissions:
@@ -16,7 +16,7 @@ concurrency:
 jobs:
   report:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     env:
       BROKKET_BASE_URL: ${{ secrets.BROKKET_BASE_URL }}
       BROKKET_LOGIN_PATH: ${{ secrets.BROKKET_LOGIN_PATH }}
