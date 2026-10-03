@@ -255,21 +255,21 @@ def collect_verified(date_iso: str) -> Report:
 
 def wait_for_collection_window() -> None:
     now = datetime.now(IST)
-    target = now.replace(hour=18, minute=59, second=20, microsecond=0)
+    target = now.replace(hour=18, minute=29, second=20, microsecond=0)
     if now < target:
         time.sleep((target - now).total_seconds())
 
 
 def wait_until_send_time() -> None:
     now = datetime.now(IST)
-    target = now.replace(hour=19, minute=0, second=0, microsecond=0)
+    target = now.replace(hour=18, minute=30, second=0, microsecond=0)
     if now < target:
         time.sleep((target - now).total_seconds())
     now = datetime.now(IST)
-    window_end = now.replace(hour=19, minute=1, second=0, microsecond=0)
+    window_end = now.replace(hour=18, minute=31, second=0, microsecond=0)
     if now >= window_end:
         raise RuntimeError(
-            "7:00 PM IST delivery window was missed; email was not sent at another time"
+            "6:30 PM IST delivery window was missed; email was not sent at another time"
         )
 
 

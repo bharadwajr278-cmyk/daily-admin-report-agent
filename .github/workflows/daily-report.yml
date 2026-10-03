@@ -1,9 +1,9 @@
-name: Daily admin report — 7:00 PM IST
+name: Daily admin report — 6:30 PM IST
 
 on:
   schedule:
-    # Start at 6:30 PM IST so the program can verify fresh data and send at 7:00 PM IST.
-    - cron: "0 13 * * *"
+    # Start at 6:00 PM IST so the program can verify fresh data and send at 6:30 PM IST.
+    - cron: "30 12 * * *"
   workflow_dispatch:
     inputs:
       report_date:
