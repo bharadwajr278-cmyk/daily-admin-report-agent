@@ -6,22 +6,6 @@ on:
     # collection window and sends at 6:00 PM IST. If GitHub delays the runner,
     # it sends as soon as the verified report is ready instead of losing the day.
     - cron: "30 11 * * *"
-  workflow_dispatch:
-    inputs:
-      report_date:
-        description: "Report date (YYYY-MM-DD)"
-        required: true
-        type: string
-      send_email:
-        description: "Send the report email now"
-        required: true
-        default: false
-        type: boolean
-      subject_suffix:
-        description: "Optional subject suffix, for example Corrected"
-        required: false
-        default: ""
-        type: string
 permissions:
   contents: read
 
@@ -44,8 +28,6 @@ jobs:
       GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
       REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
       REPORT_RUN_MODE: ${{ github.event_name }}
-      REPORT_DATE: ${{ inputs.report_date }}
-      REPORT_SUBJECT_SUFFIX: ${{ inputs.subject_suffix }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -63,5 +45,4 @@ jobs:
         run: python -m unittest -v test_main.py
 
       - name: Generate and email report
-        if: github.event_name == 'schedule' || inputs.send_email == true
         run: python main.py

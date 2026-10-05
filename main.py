@@ -255,7 +255,8 @@ def collect_verified(date_iso: str) -> Report:
 
 def wait_for_collection_window() -> None:
     now = datetime.now(IST)
-    target = now.replace(hour=17, minute=59, second=20, microsecond=0)
+    # Leave enough time for two complete API readings before the send instant.
+    target = now.replace(hour=17, minute=58, second=0, microsecond=0)
     if now < target:
         time.sleep((target - now).total_seconds())
 
