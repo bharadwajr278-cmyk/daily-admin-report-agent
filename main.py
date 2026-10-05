@@ -260,23 +260,17 @@ def wait_for_collection_window() -> None:
         time.sleep((target - now).total_seconds())
 
 
-def seconds_until_send_window(now: datetime) -> float | None:
-    """Return seconds to 1:00 PM IST, 0 inside the window, or None if missed."""
+def seconds_until_send_time(now: datetime) -> float:
+    """Return seconds until 1:00 PM IST, or 0 when the target has passed."""
     target = now.replace(hour=13, minute=0, second=0, microsecond=0)
-    window_end = now.replace(hour=13, minute=1, second=0, microsecond=0)
-    if now >= window_end:
-        return None
     return max(0.0, (target - now).total_seconds())
 
 
-def wait_until_send_time() -> bool:
+def wait_until_send_time() -> None:
     now = datetime.now(IST)
-    seconds = seconds_until_send_window(now)
-    if seconds is None:
-        return False
+    seconds = seconds_until_send_time(now)
     if seconds:
         time.sleep(seconds)
-    return seconds_until_send_window(datetime.now(IST)) is not None
 
 
 def email_already_sent(subject: str) -> bool:
@@ -400,18 +394,7 @@ def main() -> int:
         wait_for_collection_window()
     report = collect_verified(report_date)
     if not manual_run:
-        if not wait_until_send_time():
-            print(
-                json.dumps(
-                    {
-                        "sent": False,
-                        "date": report_date,
-                        "status": "Skipped",
-                        "reason": "1:00 PM IST delivery window was missed",
-                    }
-                )
-            )
-            return 0
+        wait_until_send_time()
     send_email(report)
     print(json.dumps({"sent": True, "date": report_date, "status": report.data_status}))
     return 0

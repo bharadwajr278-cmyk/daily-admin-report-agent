@@ -2,12 +2,10 @@ name: Daily admin report — 1:00 PM IST
 
 on:
   schedule:
-    # GitHub schedules can be delayed. Queue several early attempts from
-    # 12:10 PM to 12:50 PM IST; concurrency keeps one active attempt, and the
-    # Sent Mail check prevents duplicates. The program still sends only in
-    # the 1:00 PM IST delivery window.
-    - cron: "40-50/10 6 * * *"
-    - cron: "0-20/10 7 * * *"
+    # Start at 12:00 PM IST. The program waits for the final current-day
+    # collection window and sends at 1:00 PM IST. If GitHub delays the runner,
+    # it sends as soon as the verified report is ready instead of losing the day.
+    - cron: "30 6 * * *"
   workflow_dispatch:
     inputs:
       report_date:
@@ -34,7 +32,7 @@ concurrency:
 jobs:
   report:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       BROKKET_BASE_URL: ${{ secrets.BROKKET_BASE_URL }}
       BROKKET_LOGIN_PATH: ${{ secrets.BROKKET_LOGIN_PATH }}

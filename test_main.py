@@ -11,7 +11,7 @@ from main import (
     normalise_duration,
     report_subject,
     report_signature,
-    seconds_until_send_window,
+    seconds_until_send_time,
 )
 
 
@@ -25,19 +25,20 @@ class ReportTests(unittest.TestCase):
 
     def test_send_window_before_target(self):
         self.assertEqual(
-            seconds_until_send_window(datetime(2026, 10, 5, 12, 59, 20)),
+            seconds_until_send_time(datetime(2026, 10, 5, 12, 59, 20)),
             40.0,
         )
 
     def test_send_window_at_target(self):
         self.assertEqual(
-            seconds_until_send_window(datetime(2026, 10, 5, 13, 0, 0)),
+            seconds_until_send_time(datetime(2026, 10, 5, 13, 0, 0)),
             0.0,
         )
 
-    def test_send_window_after_deadline(self):
-        self.assertIsNone(
-            seconds_until_send_window(datetime(2026, 10, 5, 13, 1, 0))
+    def test_send_time_after_target_is_immediate(self):
+        self.assertEqual(
+            seconds_until_send_time(datetime(2026, 10, 5, 13, 1, 0)),
+            0.0,
         )
 
     def test_query_cost(self):

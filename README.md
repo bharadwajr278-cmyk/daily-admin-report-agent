@@ -28,7 +28,7 @@ Never add secret values to source files, workflow YAML, commits, issues, pull re
 
 ## Schedule
 
-The report is scheduled **daily for 1:00 PM IST only** and is sent only to `REPORT_RECIPIENT`. GitHub queues several early attempts so the program can wait for the final collection window, verify two complete current-day readings, recalculate usage minutes independently, and send during the 1:00 PM minute. If GitHub starts too late and the 1:00:00–1:00:59 PM IST delivery window is missed, the run exits safely without sending at another time.
+The report is scheduled **daily for 1:00 PM IST** and is sent only to `REPORT_RECIPIENT`. GitHub starts the workflow at 12:00 PM IST so the program can wait for the final collection window, verify two complete current-day readings, recalculate usage minutes independently, and send at 1:00 PM. GitHub does not guarantee exact cron start times; if its runner is delayed past 1:00 PM, the verified current-day report is sent as soon as the delayed run starts instead of silently skipping the day.
 
 An explicitly requested historical report can be sent through the manual workflow form by entering its `YYYY-MM-DD` date and selecting the send-email confirmation. Manual runs do not change the daily schedule.
 
