@@ -25,19 +25,19 @@ class ReportTests(unittest.TestCase):
 
     def test_send_window_before_target(self):
         self.assertEqual(
-            seconds_until_send_window(datetime(2026, 10, 5, 18, 29, 20)),
+            seconds_until_send_window(datetime(2026, 10, 5, 11, 44, 20)),
             40.0,
         )
 
     def test_send_window_at_target(self):
         self.assertEqual(
-            seconds_until_send_window(datetime(2026, 10, 5, 18, 30, 0)),
+            seconds_until_send_window(datetime(2026, 10, 5, 11, 45, 0)),
             0.0,
         )
 
     def test_send_window_after_deadline(self):
         self.assertIsNone(
-            seconds_until_send_window(datetime(2026, 10, 5, 18, 31, 0))
+            seconds_until_send_window(datetime(2026, 10, 5, 11, 46, 0))
         )
 
     def test_query_cost(self):
@@ -61,7 +61,7 @@ class ReportTests(unittest.TestCase):
             "REPORT_SUBJECT_SUFFIX": "",
         },
     )
-    def test_additional_recipient_is_cc(self):
+    def test_only_primary_recipient_is_used(self):
         report = Report(
             report_date="2026-10-03",
             downloads=73,
@@ -77,34 +77,6 @@ class ReportTests(unittest.TestCase):
         )
         message = build_email(report)
         self.assertEqual(message["To"], "primary@example.com")
-        self.assertEqual(message["Cc"], "additional@example.com")
-
-    @patch.dict(
-        "os.environ",
-        {
-            "GMAIL_ADDRESS": "sender@example.com",
-            "REPORT_RECIPIENT": "primary@example.com",
-            "REPORT_CC": "additional@example.com",
-            "SEND_ADDITIONAL_ONLY": "true",
-            "REPORT_SUBJECT_SUFFIX": "Additional Recipient",
-        },
-    )
-    def test_manual_additional_only_send(self):
-        report = Report(
-            report_date="2026-10-03",
-            downloads=73,
-            filtered_members=213,
-            usage_day_wise="1D 12H 32M 57S",
-            whatsapp=4,
-            called=28,
-            shared=1,
-            total_query_cost="₹467.65 Cr",
-            usage_minutes="2192.95",
-            data_status="Verified",
-            note="",
-        )
-        message = build_email(report)
-        self.assertEqual(message["To"], "additional@example.com")
         self.assertIsNone(message["Cc"])
 
     @patch("main.query_summary")

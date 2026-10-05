@@ -23,13 +23,12 @@ Add these under **Settings → Secrets and variables → Actions**:
 - `GMAIL_ADDRESS`
 - `GMAIL_APP_PASSWORD`
 - `REPORT_RECIPIENT`
-- `REPORT_CC`
 
 Never add secret values to source files, workflow YAML, commits, issues, pull requests, or workflow logs.
 
 ## Schedule
 
-The report is scheduled **daily for 6:30 PM IST only**. GitHub starts the workflow at 6:00 PM IST so the program can wait for the final collection window, verify two complete current-day readings, recalculate usage minutes independently, and send during the 6:30 PM minute. If GitHub starts too late and the 6:30:00–6:30:59 PM IST delivery window is missed, the job fails without sending at another time.
+The report is scheduled **daily for 11:45 AM IST only** and is sent only to `REPORT_RECIPIENT`. GitHub queues several early attempts so the program can wait for the final collection window, verify two complete current-day readings, recalculate usage minutes independently, and send during the 11:45 AM minute. If GitHub starts too late and the 11:45:00–11:45:59 AM IST delivery window is missed, the run exits safely without sending at another time.
 
 An explicitly requested historical report can be sent through the manual workflow form by entering its `YYYY-MM-DD` date and selecting the send-email confirmation. Manual runs do not change the daily schedule.
 

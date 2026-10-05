@@ -255,15 +255,15 @@ def collect_verified(date_iso: str) -> Report:
 
 def wait_for_collection_window() -> None:
     now = datetime.now(IST)
-    target = now.replace(hour=18, minute=29, second=20, microsecond=0)
+    target = now.replace(hour=11, minute=44, second=20, microsecond=0)
     if now < target:
         time.sleep((target - now).total_seconds())
 
 
 def seconds_until_send_window(now: datetime) -> float | None:
-    """Return seconds to 6:30 PM IST, 0 inside the window, or None if missed."""
-    target = now.replace(hour=18, minute=30, second=0, microsecond=0)
-    window_end = now.replace(hour=18, minute=31, second=0, microsecond=0)
+    """Return seconds to 11:45 AM IST, 0 inside the window, or None if missed."""
+    target = now.replace(hour=11, minute=45, second=0, microsecond=0)
+    window_end = now.replace(hour=11, minute=46, second=0, microsecond=0)
     if now >= window_end:
         return None
     return max(0.0, (target - now).total_seconds())
@@ -305,12 +305,7 @@ def report_subject(date_iso: str) -> str:
 
 
 def build_email(report: Report) -> EmailMessage:
-    primary_recipient = required_env("REPORT_RECIPIENT")
-    additional_recipient = os.getenv("REPORT_CC", "").strip()
-    additional_only = os.getenv("SEND_ADDITIONAL_ONLY", "").lower() == "true"
-    if additional_only and not additional_recipient:
-        raise RuntimeError("REPORT_CC is required for an additional-recipient-only send")
-    recipient = additional_recipient if additional_only else primary_recipient
+    recipient = required_env("REPORT_RECIPIENT")
     sender = required_env("GMAIL_ADDRESS")
     subject = report_subject(report.report_date)
     rows = [
@@ -373,8 +368,6 @@ def build_email(report: Report) -> EmailMessage:
     message = EmailMessage()
     message["From"] = sender
     message["To"] = recipient
-    if additional_recipient and not additional_only:
-        message["Cc"] = additional_recipient
     message["Subject"] = subject
     message.set_content(text_body)
     message.add_alternative(html_body, subtype="html")
@@ -414,7 +407,7 @@ def main() -> int:
                         "sent": False,
                         "date": report_date,
                         "status": "Skipped",
-                        "reason": "6:30 PM IST delivery window was missed",
+                        "reason": "11:45 AM IST delivery window was missed",
                     }
                 )
             )
