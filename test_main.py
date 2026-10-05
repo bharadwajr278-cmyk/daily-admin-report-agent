@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 from unittest.mock import patch
 
 from main import (
@@ -10,6 +11,7 @@ from main import (
     normalise_duration,
     report_subject,
     report_signature,
+    seconds_until_send_window,
 )
 
 
@@ -20,6 +22,23 @@ class ReportTests(unittest.TestCase):
 
     def test_duration_normalisation(self):
         self.assertEqual(normalise_duration("1 day 2 hours 3 minutes 4 seconds"), "1D 2H 3M 4S")
+
+    def test_send_window_before_target(self):
+        self.assertEqual(
+            seconds_until_send_window(datetime(2026, 10, 5, 18, 29, 20)),
+            40.0,
+        )
+
+    def test_send_window_at_target(self):
+        self.assertEqual(
+            seconds_until_send_window(datetime(2026, 10, 5, 18, 30, 0)),
+            0.0,
+        )
+
+    def test_send_window_after_deadline(self):
+        self.assertIsNone(
+            seconds_until_send_window(datetime(2026, 10, 5, 18, 31, 0))
+        )
 
     def test_query_cost(self):
         self.assertEqual(format_query_cost(46_765_000_000), "₹4676.50 Cr")

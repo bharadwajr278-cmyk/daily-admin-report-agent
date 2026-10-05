@@ -2,8 +2,11 @@ name: Daily admin report — 6:30 PM IST
 
 on:
   schedule:
-    # Start at 6:00 PM IST so the program can verify fresh data and send at 6:30 PM IST.
-    - cron: "30 12 * * *"
+    # GitHub schedules can be delayed. Queue several early attempts from
+    # 5:45 PM to 6:25 PM IST; concurrency keeps one active attempt, and the
+    # Sent Mail check prevents duplicates. The program still sends only in
+    # the 6:30 PM IST delivery window.
+    - cron: "15-55/10 12 * * *"
   workflow_dispatch:
     inputs:
       report_date:
@@ -36,7 +39,7 @@ concurrency:
 jobs:
   report:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     env:
       BROKKET_BASE_URL: ${{ secrets.BROKKET_BASE_URL }}
       BROKKET_LOGIN_PATH: ${{ secrets.BROKKET_LOGIN_PATH }}
