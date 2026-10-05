@@ -255,15 +255,15 @@ def collect_verified(date_iso: str) -> Report:
 
 def wait_for_collection_window() -> None:
     now = datetime.now(IST)
-    target = now.replace(hour=11, minute=44, second=20, microsecond=0)
+    target = now.replace(hour=11, minute=54, second=20, microsecond=0)
     if now < target:
         time.sleep((target - now).total_seconds())
 
 
 def seconds_until_send_window(now: datetime) -> float | None:
-    """Return seconds to 11:45 AM IST, 0 inside the window, or None if missed."""
-    target = now.replace(hour=11, minute=45, second=0, microsecond=0)
-    window_end = now.replace(hour=11, minute=46, second=0, microsecond=0)
+    """Return seconds to 11:55 AM IST, 0 inside the window, or None if missed."""
+    target = now.replace(hour=11, minute=55, second=0, microsecond=0)
+    window_end = now.replace(hour=11, minute=56, second=0, microsecond=0)
     if now >= window_end:
         return None
     return max(0.0, (target - now).total_seconds())
@@ -407,7 +407,7 @@ def main() -> int:
                         "sent": False,
                         "date": report_date,
                         "status": "Skipped",
-                        "reason": "11:45 AM IST delivery window was missed",
+                        "reason": "11:55 AM IST delivery window was missed",
                     }
                 )
             )

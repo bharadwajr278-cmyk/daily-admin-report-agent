@@ -1,13 +1,13 @@
-name: Daily admin report — 11:45 AM IST
+name: Daily admin report — 11:55 AM IST
 
 on:
   schedule:
     # GitHub schedules can be delayed. Queue several early attempts from
-    # 10:55 AM to 11:35 AM IST; concurrency keeps one active attempt, and the
+    # 11:05 AM to 11:45 AM IST; concurrency keeps one active attempt, and the
     # Sent Mail check prevents duplicates. The program still sends only in
-    # the 11:45 AM IST delivery window.
-    - cron: "25-55/10 5 * * *"
-    - cron: "5 6 * * *"
+    # the 11:55 AM IST delivery window.
+    - cron: "35-55/10 5 * * *"
+    - cron: "5-15/10 6 * * *"
   workflow_dispatch:
     inputs:
       report_date:

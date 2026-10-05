@@ -25,19 +25,19 @@ class ReportTests(unittest.TestCase):
 
     def test_send_window_before_target(self):
         self.assertEqual(
-            seconds_until_send_window(datetime(2026, 10, 5, 11, 44, 20)),
+            seconds_until_send_window(datetime(2026, 10, 5, 11, 54, 20)),
             40.0,
         )
 
     def test_send_window_at_target(self):
         self.assertEqual(
-            seconds_until_send_window(datetime(2026, 10, 5, 11, 45, 0)),
+            seconds_until_send_window(datetime(2026, 10, 5, 11, 55, 0)),
             0.0,
         )
 
     def test_send_window_after_deadline(self):
         self.assertIsNone(
-            seconds_until_send_window(datetime(2026, 10, 5, 11, 46, 0))
+            seconds_until_send_window(datetime(2026, 10, 5, 11, 56, 0))
         )
 
     def test_query_cost(self):
