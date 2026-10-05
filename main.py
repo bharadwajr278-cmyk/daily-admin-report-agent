@@ -381,7 +381,7 @@ def send_email(report: Report) -> None:
 def main() -> int:
     today = datetime.now(IST).date().isoformat()
     manual_run = os.getenv("REPORT_RUN_MODE") == "workflow_dispatch"
-    report_date = os.getenv("REPORT_DATE", "").strip() if manual_run else today
+    report_date = (os.getenv("REPORT_DATE", "").strip() or today) if manual_run else today
     if manual_run:
         try:
             datetime.strptime(report_date, "%Y-%m-%d")
@@ -396,6 +396,9 @@ def main() -> int:
     report = collect_verified(report_date)
     if not manual_run:
         wait_until_send_time()
+    if email_already_sent(subject):
+        print(f"Report for {report_date} was sent by another run; skipping duplicate.")
+        return 0
     send_email(report)
     print(json.dumps({"sent": True, "date": report_date, "status": report.data_status}))
     return 0

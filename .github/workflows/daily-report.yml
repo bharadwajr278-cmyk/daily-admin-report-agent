@@ -2,16 +2,19 @@ name: Daily admin report — 6:00 PM IST
 
 on:
   schedule:
-    # Start at 5:00 PM IST. The program waits for the final current-day
-    # collection window and sends at 6:00 PM IST. If GitHub delays the runner,
-    # it sends as soon as the verified report is ready instead of losing the day.
-    - cron: "30 11 * * *"
+    # GitHub cron is best-effort and can occasionally delay or drop one trigger.
+    # Start several automatic backups before 6:00 PM IST. Concurrency below
+    # keeps only the newest run alive; that run waits for the final data window.
+    - cron: "30,45 10 * * *"
+    - cron: "0,15,30,45 11 * * *"
+    - cron: "0,15 12 * * *"
+  workflow_dispatch:
 permissions:
   contents: read
 
 concurrency:
   group: daily-admin-report
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   report:
