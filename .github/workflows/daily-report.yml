@@ -1,11 +1,11 @@
-name: Daily admin report — 1:00 PM IST
+name: Daily admin report — 6:00 PM IST
 
 on:
   schedule:
-    # Start at 12:00 PM IST. The program waits for the final current-day
-    # collection window and sends at 1:00 PM IST. If GitHub delays the runner,
+    # Start at 5:00 PM IST. The program waits for the final current-day
+    # collection window and sends at 6:00 PM IST. If GitHub delays the runner,
     # it sends as soon as the verified report is ready instead of losing the day.
-    - cron: "30 6 * * *"
+    - cron: "30 11 * * *"
   workflow_dispatch:
     inputs:
       report_date:

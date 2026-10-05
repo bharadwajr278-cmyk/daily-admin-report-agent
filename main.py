@@ -255,14 +255,14 @@ def collect_verified(date_iso: str) -> Report:
 
 def wait_for_collection_window() -> None:
     now = datetime.now(IST)
-    target = now.replace(hour=12, minute=59, second=20, microsecond=0)
+    target = now.replace(hour=17, minute=59, second=20, microsecond=0)
     if now < target:
         time.sleep((target - now).total_seconds())
 
 
 def seconds_until_send_time(now: datetime) -> float:
-    """Return seconds until 1:00 PM IST, or 0 when the target has passed."""
-    target = now.replace(hour=13, minute=0, second=0, microsecond=0)
+    """Return seconds until 6:00 PM IST, or 0 when the target has passed."""
+    target = now.replace(hour=18, minute=0, second=0, microsecond=0)
     return max(0.0, (target - now).total_seconds())
 
 
