@@ -62,7 +62,7 @@ class ReportTests(unittest.TestCase):
             "REPORT_SUBJECT_SUFFIX": "",
         },
     )
-    def test_only_primary_recipient_is_used(self):
+    def test_primary_and_additional_recipients_are_used(self):
         report = Report(
             report_date="2026-10-03",
             downloads=73,
@@ -78,6 +78,34 @@ class ReportTests(unittest.TestCase):
         )
         message = build_email(report)
         self.assertEqual(message["To"], "primary@example.com")
+        self.assertEqual(message["Cc"], "additional@example.com")
+
+    @patch.dict(
+        "os.environ",
+        {
+            "GMAIL_ADDRESS": "sender@example.com",
+            "REPORT_RECIPIENT": "primary@example.com",
+            "REPORT_CC": "additional@example.com",
+            "SEND_ADDITIONAL_ONLY": "true",
+            "REPORT_SUBJECT_SUFFIX": "",
+        },
+    )
+    def test_additional_only_recovery_recipient(self):
+        report = Report(
+            report_date="2026-10-05",
+            downloads=1,
+            filtered_members=2,
+            usage_day_wise="3M",
+            whatsapp=0,
+            called=0,
+            shared=0,
+            total_query_cost="₹0.00 Cr",
+            usage_minutes="3.00",
+            data_status="Verified",
+            note="",
+        )
+        message = build_email(report)
+        self.assertEqual(message["To"], "additional@example.com")
         self.assertIsNone(message["Cc"])
 
     @patch("main.query_summary")

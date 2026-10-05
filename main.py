@@ -301,6 +301,10 @@ def report_subject(date_iso: str) -> str:
 
 def build_email(report: Report) -> EmailMessage:
     recipient = required_env("REPORT_RECIPIENT")
+    additional_recipient = os.getenv("REPORT_CC", "").strip()
+    additional_only = os.getenv("SEND_ADDITIONAL_ONLY", "").strip().lower() == "true"
+    if additional_only and not additional_recipient:
+        raise RuntimeError("REPORT_CC is required for an additional-only recovery email")
     sender = required_env("GMAIL_ADDRESS")
     subject = report_subject(report.report_date)
     rows = [
@@ -362,7 +366,9 @@ def build_email(report: Report) -> EmailMessage:
     """
     message = EmailMessage()
     message["From"] = sender
-    message["To"] = recipient
+    message["To"] = additional_recipient if additional_only else recipient
+    if additional_recipient and not additional_only:
+        message["Cc"] = additional_recipient
     message["Subject"] = subject
     message.set_content(text_body)
     message.add_alternative(html_body, subtype="html")
@@ -381,6 +387,7 @@ def send_email(report: Report) -> None:
 def main() -> int:
     today = datetime.now(IST).date().isoformat()
     manual_run = os.getenv("REPORT_RUN_MODE") == "workflow_dispatch"
+    additional_only = os.getenv("SEND_ADDITIONAL_ONLY", "").strip().lower() == "true"
     report_date = (os.getenv("REPORT_DATE", "").strip() or today) if manual_run else today
     if manual_run:
         try:
@@ -388,7 +395,7 @@ def main() -> int:
         except ValueError as error:
             raise RuntimeError("REPORT_DATE must use YYYY-MM-DD format") from error
     subject = report_subject(report_date)
-    if email_already_sent(subject):
+    if not additional_only and email_already_sent(subject):
         print(f"Report for {report_date} already exists in Sent Mail; skipping duplicate.")
         return 0
     if not manual_run:
@@ -396,7 +403,7 @@ def main() -> int:
     report = collect_verified(report_date)
     if not manual_run:
         wait_until_send_time()
-    if email_already_sent(subject):
+    if not additional_only and email_already_sent(subject):
         print(f"Report for {report_date} was sent by another run; skipping duplicate.")
         return 0
     send_email(report)

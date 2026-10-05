@@ -9,6 +9,12 @@ on:
     - cron: "0,15,30,45 11 * * *"
     - cron: "0,15 12 * * *"
   workflow_dispatch:
+    inputs:
+      additional_only:
+        description: Send the recovery copy only to the additional recipient
+        required: false
+        default: false
+        type: boolean
 permissions:
   contents: read
 
@@ -30,7 +36,9 @@ jobs:
       GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
       GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
       REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
+      REPORT_CC: ${{ secrets.REPORT_CC }}
       REPORT_RUN_MODE: ${{ github.event_name }}
+      SEND_ADDITIONAL_ONLY: ${{ github.event.inputs.additional_only || 'false' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
