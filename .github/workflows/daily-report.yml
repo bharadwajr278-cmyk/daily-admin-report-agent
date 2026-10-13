@@ -1,13 +1,8 @@
 name: Daily admin report — 6:00 PM IST
 
 on:
-  schedule:
-    # GitHub cron is best-effort and can occasionally delay or drop one trigger.
-    # Start several automatic backups before 6:00 PM IST. Concurrency below
-    # keeps only the newest run alive; that run waits for the final data window.
-    - cron: "30,45 10 * * *"
-    - cron: "0,15,30,45 11 * * *"
-    - cron: "0,15 12 * * *"
+  # Automatic daily delivery is paused. Keep the manual trigger available so
+  # the workflow can be tested or resumed without recreating it.
   workflow_dispatch:
     inputs:
       additional_only:
